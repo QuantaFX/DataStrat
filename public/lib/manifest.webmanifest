@@ -1,0 +1,19 @@
+{
+  "id": "/console",
+  "name": "DATASTRAT — Global Monitoring Console",
+  "short_name": "DATASTRAT",
+  "description": "Real-time geopolitical intelligence console: live global events, map layers, markets and AI briefings.",
+  "start_url": "/console",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0a0f16",
+  "theme_color": "#0a0f16",
+  "categories": ["news", "utilities", "productivity"],
+  "icons": [
+    { "src": "/lib/geostrat-icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "/lib/geostrat-icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "/lib/geostrat-icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ]
+}

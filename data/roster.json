@@ -1,0 +1,134 @@
+[
+{
+"ch": "Alibk3",
+"label": "ALI BK",
+"src": "tg",
+"hint": "iran"
+},
+{
+"ch": "nayaforiraq_en",
+"label": "NAYA (IRAQ)",
+"src": "tg",
+"hint": "iraq"
+},
+{
+"ch": "sentdefender",
+"label": "SENTDEFENDER",
+"src": "x",
+"hint": null
+},
+{
+"ch": "clashreport",
+"label": "CLASH REPORT",
+"src": "tg",
+"hint": null
+},
+{
+"ch": "spectatorindex",
+"label": "SPECTATOR IDX",
+"src": "x",
+"hint": null
+},
+{
+"ch": "currentreport1",
+"label": "CURRENT RPT",
+"src": "x",
+"hint": null
+},
+{
+"ch": "iranobserver0",
+"label": "IRAN OBSERVER",
+"src": "x",
+"hint": null
+},
+{
+"ch": "GlobeEyeNews",
+"label": "GLOBE EYE",
+"src": "x",
+"hint": null
+},
+{
+"ch": "DerDorNews",
+"label": "DER DOR NEWS",
+"src": "x",
+"hint": null
+},
+{
+"ch": "roqchams",
+"label": "ROQCHAMS",
+"src": "x",
+"hint": null
+},
+{
+"ch": "refugeesps",
+"label": "REFUGEES PS",
+"src": "x",
+"hint": null
+},
+{
+"ch": "idfonline",
+"label": "IDF",
+"src": "tg",
+"hint": "israel"
+},
+{
+"ch": "NOELreports",
+"label": "NOEL REPORTS",
+"src": "tg",
+"hint": "ukraine"
+},
+{
+"ch": "WarMonitor3",
+"label": "WAR MONITOR 3",
+"src": "x",
+"hint": null
+},
+{
+"ch": "RyanRozbiani",
+"label": "R. ROZBIANI",
+"src": "x",
+"hint": null
+},
+{
+"ch": "intelfrombrian",
+"label": "INTEL BRIAN",
+"src": "x",
+"hint": null
+},
+{
+"ch": "AFpost",
+"label": "AF POST",
+"src": "tg",
+"hint": null
+},
+{
+"ch": "Middle_East_Spectator",
+"label": "ME SPECTATOR",
+"src": "tg",
+"hint": "israel"
+},
+{
+"ch": "osinttechnical",
+"label": "OSINTTECH",
+"src": "tg",
+"hint": "ukraine"
+},
+{
+"ch": "warmonitors",
+"label": "WAR MONITOR",
+"src": "tg",
+"hint": "ukraine"
+},
+{
+"ch": "intelslava",
+"label": "INTEL SLAVA",
+"src": "tg",
+"hint": "ukraine"
+},
+{
+"ch": "supernova_plus",
+"label": "SUPERNOVA+",
+"src": "tg",
+"hint": "russia"
+}
+]

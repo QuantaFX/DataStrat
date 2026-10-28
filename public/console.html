@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DATASTRAT // Geospatial Intelligence Console</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='72' fill='%230a0f0a'/%3E%3Ccircle cx='256' cy='256' r='150' fill='none' stroke='%234a9eff' stroke-width='36'/%3E%3Ccircle cx='256' cy='256' r='60' fill='%237cc4ff'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#0a0f16">
+<meta name="color-scheme" content="dark light">
+<link rel="manifest" href="/lib/manifest.webmanifest">
+<link rel="stylesheet" href="/styles.css?v=42">
+<link rel="stylesheet" href="/lib/clone.css?v=60">
+</head>
+<body>
+
+<header id="topbar">
+  <div class="brand">
+    <span class="brand-mark">◉</span>
+    <span class="brand-name">DATASTRAT</span>
+    <span class="brand-sub">GEOSPATIAL INTELLIGENCE CONSOLE</span>
+  </div>
+  <div class="topbar-status">
+    <button id="gti-gauge" class="gti-gauge" title="Global Tension Index — click for the breakdown">
+      <span class="gti-k">GTI</span>
+      <span class="gti-v" id="gti-v">--</span>
+      <svg class="gti-spark" viewBox="0 0 46 18" preserveAspectRatio="none"><polyline id="gti-spark-line" fill="none" stroke-width="1.4" points=""/></svg>
+      <span class="gti-b" id="gti-b">···</span>
+    </button>
+    <span class="status-item" id="feed-status"><span class="dot dot-green" id="feed-dot"></span><span id="feed-text">UPLINK --/--</span></span>
+    <span class="status-item" id="defcon">READINESS <b>LVL --</b></span>
+    <span class="status-item clock" id="clock-utc">--:--:--Z</span>
+    <span class="status-item clock dim" id="clock-local">LOCAL --:--:--</span>
+    <button id="theme-btn" class="hdr-btn" title="Toggle light / dark">☾ DARK</button>
+  </div>
+</header>
+
+<div id="clocks-strip"></div>
+
+<div id="ticker-strip">
+  <div class="ticker-label">WIRE</div>
+  <div class="ticker-viewport"><div class="ticker-track" id="ticker-track"></div></div>
+</div>
+
+<main id="layout">
+  <aside id="panel-left" class="panel">
+    <div class="lp-tabs"><div class="lp-tabs-track" id="lp-tabs-track">
+      <button class="lp-tab active" data-pane="wire">▤ WIRE</button>
+      <button class="lp-tab" data-pane="feed">⚑ FEEDS</button>
+      <button class="lp-tab" data-pane="news">▤ NEWS</button>
+      <button class="lp-tab" data-pane="choke">◈ CHOKE</button>
+      <button class="lp-tab" data-pane="plcs">◎ PLACES</button>
+    </div></div>
+
+    <div id="lp-wire" class="lp-pane active">
+      <div class="lp-pane-head">LIVE WIRE <span class="panel-count" id="wire-count"></span></div>
+      <div class="filter-row" id="wire-filters">
+        <button class="filter-btn active" data-sev="ALL">ALL</button>
+        <button class="filter-btn" data-sev="HIGH">HIGH</button>
+        <button class="filter-btn" data-sev="ELEVATED">ELEV</button>
+        <button class="filter-btn" data-sev="ROUTINE">ROUTINE</button>
+      </div>
+      <div class="panel-scroll" id="wire-list"></div>
+    </div>
+
+    <div id="lp-feed" class="lp-pane">
+      <div class="lp-pane-head">CHANNEL UPLINK <span class="panel-count" id="feed-count"></span></div>
+      <div class="choke-note">Per-channel health. Scrapeable channels refresh every 3 min; a 302 means no public preview and needs a secondary source.</div>
+      <div class="panel-scroll" id="chan-list"></div>
+    </div>
+
+    <div id="lp-news" class="lp-pane">
+      <div class="lp-pane-head">NEWS WIRE <span class="panel-count" id="news-count"></span></div>
+      <div class="choke-note">Google News RSS, deduped by headline. Click a story to plot it. Source outlets are clickable.</div>
+      <div class="panel-scroll" id="news-list"></div>
+    </div>
+
+    <div id="lp-choke" class="lp-pane">
+      <div class="lp-pane-head">◈ CHOKEPOINTS <span class="panel-count" id="choke-upd"></span></div>
+      <div class="choke-note">Straits scored on nearby events in the last 24 h.</div>
+      <div class="panel-scroll" id="choke-list"></div>
+    </div>
+
+    <div id="lp-plcs" class="lp-pane">
+      <div class="lp-pane-head">TOP PLACES <span class="panel-count" id="plc-count"></span></div>
+      <div class="panel-scroll" id="place-list"></div>
+    </div>
+  </aside>
+
+  <section id="map-wrap">
+    <svg id="map"></svg>
+    <button id="map-mode-btn" title="Switch between flat map and globe">◉ GLOBE</button>
+    <div id="map-controls">
+      <button id="zoom-in" class="map-btn" title="Zoom in">+</button>
+      <button id="zoom-out" class="map-btn" title="Zoom out">−</button>
+      <button id="zoom-reset" class="map-btn" title="Reset view">⌂</button>
+      <button id="map-fs" class="map-btn" title="Fullscreen map">⛶</button>
+    </div>
+    <div id="map-legend"></div>
+    <div id="tooltip"></div>
+    <aside id="dossier"></aside>
+  </section>
+
+  <aside id="panel-right" class="panel">
+    <div class="mm-head"><span>MARKET MONITOR</span><span class="mm-upd" id="mm-upd"></span></div>
+    <div class="mm-risk"><span>MARKET RISK</span><b id="mm-risk-v">--</b>
+      <div class="mm-risk-bar"><i id="mm-risk-fill"></i></div></div>
+    <div class="panel-scroll" id="mm-geotick"></div>
+    <div class="lp-tabs mm-tabs-top"><div class="lp-tabs-track">
+      <button class="lp-tab active" data-pane="mdepot">◈ ENERGY DEPOT</button>
+      <button class="lp-tab" data-pane="movn">☾ OVERNIGHT</button>
+    </div></div>
+    <div class="mm-cats" id="mm-cats">
+      <button class="filter-btn active" data-g="movers">MOVERS</button>
+      <button class="filter-btn" data-g="exchanges">EXCHANGES</button>
+      <button class="filter-btn" data-g="crypto">CRYPTO</button>
+      <button class="filter-btn" data-g="metals">METALS</button>
+      <button class="filter-btn" data-g="commodities">COMMODITIES</button>
+      <button class="filter-btn" data-g="sectors">SECTORS</button>
+      <button class="filter-btn" data-g="shipping">SHIPPING</button>
+      <button class="filter-btn" data-g="funds">FUNDS</button>
+      <button class="filter-btn" data-g="forex">FOREX</button>
+      <button class="filter-btn" data-g="rates">RATES</button>
+    </div>
+    <div id="lp-movers" class="lp-pane active">
+      <div class="mm-sec">TOP GAINERS</div>
+      <div id="mm-grid" class="mm-grid"></div>
+      <div class="mm-sec">INTEL FEED <span class="live-tag">LIVE</span></div>
+      <div class="filter-row" id="intel-filters">
+        <button class="filter-btn active" data-c="ALL">ALL</button>
+        <button class="filter-btn" data-c="CONFLICT">CONFLICT</button>
+        <button class="filter-btn" data-c="ENERGY">ENERGY</button>
+        <button class="filter-btn" data-c="MARKETS">MARKETS</button>
+        <button class="filter-btn" data-c="CYBER">CYBER</button>
+        <button class="filter-btn" data-c="DIPLO">DIPLO</button>
+      </div>
+      <div class="panel-scroll" id="intel-body"></div>
+    </div>
+    <div id="lp-movn" class="lp-pane">
+      <div class="mm-sec">OVERNIGHT SLATE</div>
+      <div class="panel-scroll" id="ovn-body"></div>
+    </div>
+  </aside>
+</main>
+
+<div id="layer-bar" class="collapsed">
+  <button id="layer-collapse" title="Collapse / expand">LAYERS ▾</button>
+  <div id="layer-tools">
+    <input id="layer-search" type="search" placeholder="SEARCH LAYERS…" spellcheck="false" autocomplete="off">
+    <div class="lt-row" id="layer-scenes">
+      <span class="lt-lbl">SCENES</span>
+      <button class="scene-btn" data-scene="conflict">▲ CONFLICT</button>
+      <button class="scene-btn" data-scene="energy">⛽ ENERGY</button>
+      <button class="scene-btn" data-scene="maritime">⚓ MARITIME</button>
+      <button class="scene-btn" data-scene="markets">$ MARKETS</button>
+      <button class="scene-btn" data-scene="cyber">⌗ CYBER</button>
+      <button class="scene-btn" data-scene="reset">↺ RESET</button>
+    </div>
+    <div class="lt-row" id="layer-recent" hidden><span class="lt-lbl">RECENT</span><span id="layer-recent-chips"></span></div>
+  </div>
+  <div id="layer-groups">
+    <div class="lg-col"><span class="lg-cat">CORE</span>
+      <button class="layer-btn active" data-layer="sitrep"><span class="lyr-ic">▦</span>SITREP</button>
+      <button class="layer-btn active" data-layer="assets"><span class="lyr-ic">◆</span>ASSETS</button>
+      <button class="layer-btn" data-layer="nuclear"><span class="lyr-ic">☢</span>NUCLEAR</button>
+    </div>
+    <div class="lg-col"><span class="lg-cat">LIVE</span>
+      <button class="layer-btn active" data-layer="events"><span class="lyr-ic">⚑</span>EVENTS</button>
+      <button class="layer-btn" data-layer="news"><span class="lyr-ic">▤</span>NEWS</button>
+      <button class="layer-btn active" data-layer="liveops"><span class="lyr-ic">⚠</span>NATURAL DISASTERS</button>
+      <button class="layer-btn" data-layer="conflictzones"><span class="lyr-ic">▲</span>CONFLICT ZONES</button>
+      <button class="layer-btn" data-layer="protests"><span class="lyr-ic">✊</span>PROTESTS</button>
+      <button class="layer-btn" data-layer="flights"><span class="lyr-ic">✈</span>FLIGHTS</button>
+      <button class="layer-btn" data-layer="disease"><span class="lyr-ic">✚</span>DISEASE</button>
+      <button class="layer-btn" data-layer="fuel"><span class="lyr-ic">⛽</span>FUEL</button>
+      <button class="layer-btn" data-layer="displace"><span class="lyr-ic">⇉</span>DISPLACEMENT</button>
+      <button class="layer-btn" data-layer="commodity"><span class="lyr-ic">⇄</span>COMMODITIES</button>
+    </div>
+    <div class="lg-col"><span class="lg-cat">INFRASTRUCTURE</span>
+      <button class="layer-btn active" data-layer="routes"><span class="lyr-ic">⚓</span>SEA LANES</button>
+      <button class="layer-btn" data-layer="blockade"><span class="lyr-ic">⊘</span>BLOCKADE</button>
+      <button class="layer-btn active" data-layer="pipes"><span class="lyr-ic">▬</span>PIPELINES</button>
+      <button class="layer-btn" data-layer="cables"><span class="lyr-ic">∿</span>CABLES</button>
+      <button class="layer-btn" data-layer="railnet"><span class="lyr-ic">⊟</span>RAIL NET</button>
+      <button class="layer-btn" data-layer="ships"><span class="lyr-ic">⛴</span>SHIPS</button>
+      <button class="layer-btn" data-layer="datacenters"><span class="lyr-ic">▣</span>AI/DC</button>
+    </div>
+    <div class="lg-col"><span class="lg-cat">OVERLAY</span>
+      <button class="layer-btn" data-layer="radiation"><span class="lyr-ic">⚛</span>RADIATION</button>
+      <button class="layer-btn" data-layer="sanctions"><span class="lyr-ic">⛔</span>SANCTIONS</button>
+      <button class="layer-btn" data-layer="cyber"><span class="lyr-ic">⌗</span>CYBER</button>
+      <button class="layer-btn" data-layer="gpsjam"><span class="lyr-ic">⊗</span>GPS JAM</button>
+      <button class="layer-btn" data-layer="spacewx"><span class="lyr-ic">✷</span>SPACE WX</button>
+      <button class="layer-btn" data-layer="outages"><span class="lyr-ic">⚡</span>OUTAGES</button>
+      <button class="layer-btn" data-layer="resources"><span class="lyr-ic">⛏</span>RESOURCES</button>
+      <button class="layer-btn" data-layer="elections"><span class="lyr-ic">⊛</span>ELECTIONS</button>
+      <button class="layer-btn" data-layer="airspace"><span class="lyr-ic">◬</span>AIRSPACE</button>
+      <button class="layer-btn" data-layer="timezones"><span class="lyr-ic">◷</span>TIMEZONES</button>
+    </div>
+  </div>
+</div>
+
+<div id="gti-modal" style="display:none">
+  <div class="gti-win">
+    <div class="hdr"><span>◉ GLOBAL TENSION INDEX — BREAKDOWN</span><button id="gti-close" class="hdr-btn">✕</button></div>
+    <div id="gti-big" class="gti-big">--</div>
+    <div id="gti-bandlab" class="gti-band">···</div>
+    <svg id="gti-chart" viewBox="0 0 320 70" style="width:100%;height:70px"></svg>
+    <div id="gti-comps"></div>
+    <div id="gti-regions"></div>
+    <div id="gti-upd" class="nm-note"></div>
+  </div>
+</div>
+
+<script src="/lib/d3.v7.min.js"></script>
+<script src="/lib/topojson-client.min.js"></script>
+<script src="/lib/countries-110m.js?v=9"></script>
+<script src="/lib/countries-50m.js?v=9"></script>
+<script src="/lib/data.js?v=9"></script>
+<script src="/lib/data2.js?v=9"></script>
+<script src="/lib/app/util.js?v=2"></script>
+<script src="/lib/app/map.js?v=60"></script>
+<script src="/lib/app/events.js?v=25"></script>
+<script src="/lib/app/layers.js?v=35"></script>
+<script src="/lib/app/dossier.js?v=29"></script>
+<script src="/lib/app/ticker.js?v=41"></script>
+<script src="/lib/app/markets.js?v=41"></script>
+<script src="/lib/app/news.js?v=6"></script>
+<script src="/lib/app/panels.js?v=2"></script>
+<script src="/lib/app/gti.js?v=2"></script>
+<script src="/lib/app/boot.js?v=41"></script>
+</body>
+</html>
