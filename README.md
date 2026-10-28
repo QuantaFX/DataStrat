@@ -4,8 +4,6 @@ A geopolitical monitoring console: a live world map, a Telegram OSINT wire, a ma
 composite Global Tension Index. Built as a from-scratch clone of a black-box reverse-engineering
 exercise — same layout and feature surface, with several data-model fixes.
 
-**Live:** http://66.181.46.15:8100/console
-
 ## Running it
 
 ```bash
